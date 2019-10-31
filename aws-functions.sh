@@ -23,8 +23,18 @@ aws_ec2_list(){
             --output table
     done
 }
+aws_ec2_delete(){
+    if [[ ${1} = '-h' ]] || [[ ${1} = '--help' ]] || [[ -z ${1} ]] || [[ -z ${2} ]]; then
+        echo "Deletes the specified instance-id in the region you specify"
+        echo 'example: aws_ec2_delete i-0c881632e54d6394d us-east-1'
+    else
+        aws ec2 terminate-instances \
+            --instance-ids ${1}\
+            --region ${2}\
+            --output table
+    fi
+}
 #aws_ec2_create
-#aws_ec2_delete
 
 #################AWS R53###################
 aws_route53_list(){
