@@ -46,9 +46,13 @@ aws_route53_list(){
 
 #################AWS Lightsail###################
 aws_lightsail_list(){
-    aws lightsail get-instances \
-        --query "instances[*].{Zone:location.availabilityZone, IP:publicIpAddress, Username:username, State:state.name, key:sshKeyName, BundleID:bundleId, Name:name}" \
-        --output table
+    all_lightsail_regions=$(aws lightsail get-regions --query regions[*].[name] --output text)
+    for region in $all_lightsail_regions; do
+        aws lightsail get-instances \
+            --region $region\
+            --query "instances[*].{Zone:location.availabilityZone, IP:publicIpAddress, Username:username, State:state.name, key:sshKeyName, BundleID:bundleId, Name:name}" \
+            --output table
+    done
 }
 
 aws_lightsail_create(){
@@ -67,6 +71,14 @@ aws_lightsail_create(){
             --availability-zone us-east-1a \
             --key-pair-name ${2}\
             --output table
+    fi
+}
+
+aws_lightsail_get_port_states(){
+    if [[ ${1} = '-h' ]] || [[ ${1} = '--help' ]] || [[ -z ${1} ]]; then
+        echo "Usage: aws_lightsail_get_port_states <LightsailInstanceName>"
+    else
+        aws lightsail get-instance-port-states --instance-name ${1}
     fi
 }
 
